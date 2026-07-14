@@ -14,6 +14,7 @@
   var thanksPath = form.dataset.thanksPath || '/jp/thanks.html';
   var placeholderUrl = 'https://script.google.com/macros/s/REPLACE_WITH_GAS_WEB_APP_URL/exec';
   var isSubmitting = false;
+  var fallbackTimer = null;
   var iframeName = 'mail_form_result';
   var resultFrame = document.getElementById(iframeName);
 
@@ -28,8 +29,17 @@
 
   form.setAttribute('target', iframeName);
 
+  function redirectToThanks() {
+    window.location.href = window.location.origin + thanksPath;
+  }
+
   function resetSubmitButton() {
     isSubmitting = false;
+
+    if (fallbackTimer) {
+      clearTimeout(fallbackTimer);
+      fallbackTimer = null;
+    }
 
     if (submitButton) {
       submitButton.disabled = false;
@@ -53,12 +63,24 @@
     }
 
     if (data.status === 'success') {
-      window.location.href = window.location.origin + thanksPath;
+      redirectToThanks();
       return;
     }
 
     resetSubmitButton();
     window.alert(data.message || submitErrorMessage);
+  });
+
+  resultFrame.addEventListener('load', function() {
+    if (!isSubmitting || fallbackTimer) {
+      return;
+    }
+
+    fallbackTimer = setTimeout(function() {
+      if (isSubmitting) {
+        redirectToThanks();
+      }
+    }, 1000);
   });
 
   form.addEventListener('submit', function(event) {
