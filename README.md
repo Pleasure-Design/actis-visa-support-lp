@@ -12,6 +12,7 @@ LP 本体は Firebase Hosting で静的配信し、フォーム処理は Google 
 - `public/en/` が英語 LP です。
 - `public/jp/thanks.html` と `public/en/thanks.html` がサイト側のサンクスページです。
 - PHP ファイルは Firebase Hosting には配置しません。Hosting は静的ファイルのみを配信します。
+- ルート直下に `jp/` や `en/` は置きません。公開対象は `public/` 配下だけに統一します。
 
 Firebase 設定:
 
