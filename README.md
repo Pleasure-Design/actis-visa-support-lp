@@ -1,90 +1,103 @@
 # ACTIS Visa Support LP
 
-This repository hosts the ACTIS visa support landing pages as static files on Firebase Hosting. Form processing is handled by Google Apps Script (GAS).
+行政書士法人アクティスの在留資格・ビザサポート LP です。
 
-## Hosting Structure
+LP 本体は Firebase Hosting で静的配信し、フォーム処理は Google Apps Script（GAS）で行います。
 
-- `public/` is the Firebase Hosting public directory.
-- `public/index.html` redirects visitors to `/jp/`.
-- `public/jp/` contains the Japanese LP.
-- `public/en/` contains the English LP.
-- `public/jp/thanks.html` and `public/en/thanks.html` are site-side thank-you pages.
-- PHP files are not deployed. Firebase Hosting serves static assets only.
+## 公開構成
 
-Firebase settings:
+- `public/` が Firebase Hosting の公開ディレクトリです。
+- `public/index.html` は `/jp/` へリダイレクトします。
+- `public/jp/` が日本語 LP です。
+- `public/en/` が英語 LP です。
+- `public/jp/thanks.html` と `public/en/thanks.html` がサイト側のサンクスページです。
+- PHP ファイルは Firebase Hosting には配置しません。Hosting は静的ファイルのみを配信します。
 
-- Project: `actis-visa-support-lp`
-- Hosting public directory: `public`
-- Config files: `firebase.json`, `.firebaserc`
+Firebase 設定:
 
-## Form Flow
+- プロジェクト: `actis-visa-support-lp`
+- Hosting 公開ディレクトリ: `public`
+- 設定ファイル: `firebase.json`, `.firebaserc`
 
-The form is submitted to GAS from the site, but the visible thank-you page is owned by this site.
+## フォーム送信の流れ
 
-Current flow:
+フォームはサイトから GAS に送信しますが、ユーザーに見せるサンクスページはこのサイト側で管理します。
 
-1. User submits the form on `/jp/` or `/en/`.
-2. `public/jp/js/contact.js` or `public/en/js/contact.js` validates required fields.
-3. The form posts to GAS through a hidden iframe.
-4. GAS records the inquiry, sends emails, and returns a small HTML response.
-5. The site waits for a GAS completion signal, then redirects to the local thank-you page.
-6. If the GAS response loads but `postMessage` is not received, the site falls back to redirecting to the local thank-you page after the iframe load.
+現在の流れ:
 
-The thank-you pages and their "back to top" buttons must remain site-side. Do not use GAS HTML as the customer-facing success page.
+1. ユーザーが `/jp/` または `/en/` のフォームを送信します。
+2. `public/jp/js/contact.js` または `public/en/js/contact.js` が必須項目を検証します。
+3. フォームは hidden iframe 経由で GAS に POST されます。
+4. GAS が問い合わせ内容をスプレッドシートへ記録し、管理者通知メールと自動返信メールを送信します。
+5. GAS は処理完了後、小さな HTML を返し、`window.top.postMessage(...)` でサイト側へ完了通知します。
+6. サイト側 JS が通知を受け取り、`/jp/thanks.html` または `/en/thanks.html` へ遷移します。
+7. `postMessage` が届かない場合でも、iframe の読み込み完了を検知してサイト側サンクスページへ遷移するフォールバックがあります。
 
-## Files To Update When GAS URL Changes
+サンクスページと「トップページへ戻る」ボタンは、必ずサイト側で管理します。GAS 側の HTML をユーザー向けサンクスページとして使わないでください。
 
-Update the `form action` in both files:
+## GAS URL を変更するとき
+
+GAS の Web アプリを再デプロイして `/exec` URL が変わったら、以下の 2 ファイルの `form action` を更新します。
 
 - `public/jp/index.html`
 - `public/en/index.html`
 
-Search for:
+検索する文字列:
 
 ```html
 <form action="https://script.google.com/macros/s/.../exec"
 ```
 
-The `action` URL should point to the latest GAS Web App `/exec` URL.
+`action` には最新の GAS Web アプリ `/exec` URL を設定します。
 
-## Site-Side Form JavaScript
+## 変更箇所早見表
 
-The JavaScript lives in:
+- GAS の URL が変わった場合: `public/jp/index.html` と `public/en/index.html` の `form action` を変更します。
+- サンクスページの文言を変える場合: `public/jp/thanks.html` と `public/en/thanks.html` を変更します。
+- サンクスページへの遷移制御を変える場合: `public/jp/js/contact.js` と `public/en/js/contact.js` を変更します。
+- メール文面や送信先を変える場合: GAS 側の `sendAdminMail_` と `sendAutoReply_` を変更します。
+- シート名や保存項目を変える場合: GAS 側の `SHEET_NAME` と `saveInquiryToSheet_` を変更します。
+
+## サイト側 JavaScript
+
+フォーム制御の JavaScript は以下です。
 
 - `public/jp/js/contact.js`
 - `public/en/js/contact.js`
 
-Responsibilities:
+担当している処理:
 
-- Required-field validation
-- Privacy-policy checkbox validation
-- Hidden iframe setup
-- Passing `site_origin` to GAS
-- Waiting for GAS completion
-- Redirecting to `/jp/thanks.html` or `/en/thanks.html`
-- Fallback redirect if the iframe loads but no `postMessage` arrives
+- 必須項目チェック
+- プライバシーポリシー同意チェック
+- hidden iframe の作成
+- `site_origin` を GAS に渡す
+- GAS の完了通知を待つ
+- `/jp/thanks.html` または `/en/thanks.html` へ遷移する
+- iframe が読み込まれても `postMessage` が届かない場合にフォールバックで遷移する
 
-GAS completion messages are accepted from:
+GAS 完了通知の送信元として許可している origin:
 
 - `https://script.google.com`
 - `https://script.googleusercontent.com`
 
-## GAS Responsibilities
+## GAS の役割
 
-GAS should only handle backend work:
+GAS はバックエンド処理だけを担当します。
 
-- Receive form fields
-- Validate required fields
-- Save inquiry data to the bound spreadsheet
-- Send admin notification emails
-- Send an auto-reply to the form submitter
-- Return a small HTML response that calls `window.top.postMessage(...)`
+- フォーム項目を受け取る
+- 必須項目を検証する
+- GAS に紐づいたスプレッドシートへ問い合わせ内容を保存する
+- 管理者通知メールを送信する
+- フォーム送信者へ自動返信メールを送信する
+- `window.top.postMessage(...)` を呼ぶ小さな HTML を返す
 
-GAS should not own the visible thank-you page.
+GAS はユーザー向けのサンクスページを持ちません。
 
-## GAS Code
+## GAS コード
 
-Use a spreadsheet-bound Apps Script so `SpreadsheetApp.getActiveSpreadsheet()` can access the sheet. If the script is standalone, use `SpreadsheetApp.openById(...)` instead.
+このコードは、スプレッドシートに紐づいた Apps Script で使う前提です。
+
+`SpreadsheetApp.getActiveSpreadsheet()` を使っているため、スタンドアロンの Apps Script で使う場合は `SpreadsheetApp.openById(...)` に変更してください。
 
 ```javascript
 var SHEET_NAME = 'inquiries';
@@ -310,25 +323,25 @@ function escapeJs_(value) {
 }
 ```
 
-## GAS Deployment Notes
+## GAS のデプロイ手順
 
-Deploy GAS as a Web App.
+GAS は Web アプリとしてデプロイします。
 
-Recommended settings:
+推奨設定:
 
-- Execute as: `Me`
-- Who has access: `Anyone`
+- 実行ユーザー: `自分`
+- アクセスできるユーザー: `全員`
 
-After changing GAS code:
+GAS コードを変更したとき:
 
-1. Save the script.
-2. Run a manual authorization function if new permissions are required.
-3. Deploy a new Web App version.
-4. Copy the new `/exec` URL.
-5. Update `public/jp/index.html` and `public/en/index.html`.
-6. Commit and push the URL update.
+1. スクリプトを保存します。
+2. 新しい権限が必要な場合は、手動実行用の関数を実行して権限を承認します。
+3. Web アプリを新しいバージョンとしてデプロイします。
+4. 新しい `/exec` URL をコピーします。
+5. `public/jp/index.html` と `public/en/index.html` の `form action` を更新します。
+6. URL 更新を commit / push します。
 
-If spreadsheet access fails with an authorization error, run a small manual function in Apps Script and approve the requested scopes:
+スプレッドシート権限でエラーが出る場合は、Apps Script 上で以下の関数を手動実行し、必要な権限を承認します。
 
 ```javascript
 function authorizeSpreadsheetAccess_() {
@@ -337,46 +350,46 @@ function authorizeSpreadsheetAccess_() {
 }
 ```
 
-## Firebase Deployment
+## Firebase のデプロイ
 
-Pull requests trigger a Firebase Hosting preview through:
+Pull Request では Firebase Hosting の preview deploy が実行されます。
 
 - `.github/workflows/firebase-hosting-pull-request.yml`
 
-Merges to `main` deploy live Hosting through:
+`main` に merge されると、本番 Hosting へ deploy されます。
 
 - `.github/workflows/firebase-hosting-merge.yml`
 
-Manual deploy, if needed:
+必要に応じて手動 deploy する場合:
 
 ```bash
 firebase deploy --only hosting
 ```
 
-## Local Checks
+## ローカル確認
 
-Serve the `public` directory locally:
+`public` ディレクトリをローカル配信します。
 
 ```bash
 python3 -m http.server 4173 --directory public
 ```
 
-Then open:
+確認 URL:
 
 - `http://localhost:4173/jp/`
 - `http://localhost:4173/en/`
 
-Basic checks:
+確認項目:
 
-- Page renders.
-- Required fields block empty submits.
-- Privacy checkbox is required.
-- Valid submit posts to GAS.
-- GAS writes a row to the sheet.
-- Admin and auto-reply emails are sent.
-- The user lands on the site-side thank-you page.
+- ページが表示される
+- 未入力送信が必須チェックで止まる
+- プライバシーポリシー同意が必須になっている
+- 正常送信で GAS に POST される
+- GAS がシートへ 1 行追加する
+- 管理者通知メールと自動返信メールが送信される
+- サイト側のサンクスページへ遷移する
 
-## Notes
+## 注意点
 
-- `customer@pled.co.jp` may be a Google Group. If mail does not arrive there but arrives at `abe@pled.co.jp`, check the Google Group posting permissions and moderation queue.
-- `public/jp/thanks.html` and `public/en/thanks.html` include comments near fixed `web.app` URLs. Replace those with the production custom domain when it is ready.
+- `customer@pled.co.jp` が Google グループの場合、`abe@pled.co.jp` には届くが `customer@pled.co.jp` には届かないことがあります。その場合は Google グループ側の投稿権限とモデレーションキューを確認してください。
+- `public/jp/thanks.html` と `public/en/thanks.html` には、固定の `web.app` URL 付近にコメントがあります。本番カスタムドメインが決まったら差し替えてください。
