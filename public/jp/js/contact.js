@@ -10,6 +10,7 @@
   var privacyMessage = form.dataset.privacyMessage || 'プライバシーポリシーに同意してください。';
   var endpointMissingMessage = form.dataset.endpointMissingMessage || 'GASのWebアプリURLを設定してください。';
   var thanksPath = form.dataset.thanksPath || '/jp/thanks.html';
+  var siteOrigin = window.location.origin;
   var placeholderUrl = 'https://script.google.com/macros/s/REPLACE_WITH_GAS_WEB_APP_URL/exec';
   var isSubmitting = false;
 
@@ -79,7 +80,7 @@
       }).catch(function() {});
     }
 
-    window.location.href = thanksPath;
+    window.location.href = siteOrigin + thanksPath;
 
     setTimeout(resetSubmitButton, 2000);
   });

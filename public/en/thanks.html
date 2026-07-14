@@ -8,6 +8,14 @@
 <title>Thank You Page｜Immigration Lawyer Corporation ACTIS</title>
 <link rel="stylesheet" type="text/css" href="css/reset.css">
 <link rel="stylesheet" type="text/css" href="css/style.css">
+<script>
+var ACTIS_SITE_ORIGIN = location.hostname === 'script.google.com'
+  ? 'https://actis-visa-support-lp.web.app'
+  : location.origin;
+if (location.hostname === 'script.google.com') {
+  location.replace(ACTIS_SITE_ORIGIN + '/en/thanks.html');
+}
+</script>
 <style>
 .thanks {
     width: 1000px;
@@ -56,7 +64,7 @@ In that case, we apologize for the inconvenience and kindly ask that you either 
  Immigration Lawyer Corporation ACTIS<br>
 4F, 2-1-16 Otemon, Chuo-ku, Fukuoka 810-0074<br>
 TEL：092-753-9641</p>
-<p class="backBtn tCenter font18 m80"><a class="white" href="index.html">Back to Home</a></p>
+<p class="backBtn tCenter font18 m80"><a class="white" href="https://actis-visa-support-lp.web.app/en/">Back to Home</a></p>
 <div class="footer">
 <p class="tCenter font15 m40 notoR"><a href="https://japan-immigration.jp/company" target="_blank">Company Profile</a>｜<a href="https://japan-immigration.jp/privacy" target="_blank">Privacy Policy</a></p>
 <p class="copy tCenter font12 m30 notoR">&copy; 2026 ACTIS Immigration Lawyer Corporation. All Rights Reserved.</p>
