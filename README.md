@@ -20,6 +20,11 @@ Firebase 設定:
 - Hosting 公開ディレクトリ: `public`
 - 設定ファイル: `firebase.json`, `.firebaserc`
 
+## 運用リンク
+
+- 問い合わせ管理シート: [ACTIS Visa Support LP inquiries](https://docs.google.com/spreadsheets/d/11lfAA2VD8x_9cC4rRJ0UctGKJ92P5vCrppp34cK_jBA/edit?gid=160895578#gid=160895578)
+- GAS 編集画面: [ACTIS Visa Support LP GAS](https://script.google.com/u/5/home/projects/1nKBleUOe7tpQllmxJOwob4-ehGWM9NOijoAH7EEK8ZLzsZxOs93kapf0/edit)
+
 ## フォーム送信の流れ
 
 フォームはサイトから GAS に送信しますが、ユーザーに見せるサンクスページはこのサイト側で管理します。
