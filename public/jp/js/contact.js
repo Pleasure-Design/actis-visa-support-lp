@@ -37,8 +37,12 @@
     }
   }
 
+  function isAllowedGasOrigin(origin) {
+    return /^https:\/\/script\.google(?:usercontent)?\.com$/i.test(origin);
+  }
+
   window.addEventListener('message', function(event) {
-    if (!/^https:\/\/script\.google\.com$/i.test(event.origin)) {
+    if (!isAllowedGasOrigin(event.origin)) {
       return;
     }
 
