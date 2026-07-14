@@ -156,9 +156,9 @@
 				<div id="contact" class="form">
 					<p class="font22 tCenter bold m60 spFont18">24時間受付の<br class="spOnly">
 						お問い合わせフォームはこちら</p>
-					<form action="https://script.google.com/a/macros/pled.co.jp/s/AKfycbyh-bgi9iEQxjJ7ER5hKJq6z6AsSy7OEMWtsd96G8n2NjBJJFgp39RGqJc97jh2MNZ1Qw/exec" method="post" id="mail_form" data-form-language="jp" data-required-message="必須項目を入力してください。" data-privacy-message="プライバシーポリシーに同意してください。" data-endpoint-missing-message="GASのWebアプリURLを設定してください。">
+					<form action="https://script.google.com/macros/s/AKfycbz-VqP3aW8VrH30OZrf7R5W98b7DxIJ4YyNYhRHy4ZV8l_qeN7QIb5t1hcrhLEqHaALRw/exec" method="post" id="mail_form" target="mail_form_result" data-form-language="jp" data-thanks-path="/jp/thanks.html" data-required-message="必須項目を入力してください。" data-privacy-message="プライバシーポリシーに同意してください。" data-endpoint-missing-message="GASのWebアプリURLを設定してください。" data-submit-error-message="送信に失敗しました。時間を置いて再度お試しください。">
 						<input type="hidden" name="lang" value="jp" />
-						<input type="hidden" name="return_url" value="/jp/thanks.html" />
+						<input type="hidden" name="site_origin" value="" />
 						<dl class="flex m25 spm20">
 							<dt>お名前</dt>
 							<dt class="hissu">必須</dt>
@@ -206,6 +206,7 @@
 							<input class="white" type="submit" id="form_submit_button" value="送信する" />
 						</p>
 					</form>
+					<iframe name="mail_form_result" id="mail_form_result" title="mail form result" style="display:none;"></iframe>
 				</div>
 				<!--/.form--> 
 			</div>

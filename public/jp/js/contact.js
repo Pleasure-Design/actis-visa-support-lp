@@ -6,17 +6,49 @@
   }
 
   var submitButton = document.getElementById('form_submit_button');
+  var siteOrigin = form.querySelector('[name="site_origin"]');
   var requiredMessage = form.dataset.requiredMessage || '必須項目を入力してください。';
   var privacyMessage = form.dataset.privacyMessage || 'プライバシーポリシーに同意してください。';
   var endpointMissingMessage = form.dataset.endpointMissingMessage || 'GASのWebアプリURLを設定してください。';
+  var submitErrorMessage = form.dataset.submitErrorMessage || '送信に失敗しました。時間を置いて再度お試しください。';
+  var thanksPath = form.dataset.thanksPath || '/jp/thanks.html';
   var placeholderUrl = 'https://script.google.com/macros/s/REPLACE_WITH_GAS_WEB_APP_URL/exec';
+  var isSubmitting = false;
+
+  function resetSubmitButton() {
+    isSubmitting = false;
+
+    if (submitButton) {
+      submitButton.disabled = false;
+      submitButton.value = '送信する';
+    }
+  }
+
+  window.addEventListener('message', function(event) {
+    if (!/^https:\/\/script\.google\.com$/i.test(event.origin)) {
+      return;
+    }
+
+    var data = event.data || {};
+
+    if (data.type !== 'actis-form-result') {
+      return;
+    }
+
+    if (data.status === 'success') {
+      window.location.href = thanksPath;
+      return;
+    }
+
+    resetSubmitButton();
+    window.alert(data.message || submitErrorMessage);
+  });
 
   form.addEventListener('submit', function(event) {
     var name = form.querySelector('[name="name_1"]');
     var phone = form.querySelector('[name="phone"]');
     var email = form.querySelector('[name="mail_address"]');
     var privacy = form.querySelector('[name="privacy"]');
-    var returnUrl = form.querySelector('[name="return_url"]');
 
     if (form.action === placeholderUrl) {
       event.preventDefault();
@@ -36,13 +68,20 @@
       return;
     }
 
-    if (returnUrl && returnUrl.value.charAt(0) === '/') {
-      returnUrl.value = window.location.origin + returnUrl.value;
+    if (isSubmitting) {
+      event.preventDefault();
+      return;
+    }
+
+    if (siteOrigin) {
+      siteOrigin.value = window.location.origin;
     }
 
     if (submitButton) {
       submitButton.disabled = true;
       submitButton.value = '送信中...';
     }
+
+    isSubmitting = true;
   });
 })();
