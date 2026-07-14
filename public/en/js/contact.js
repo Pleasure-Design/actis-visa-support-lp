@@ -6,13 +6,27 @@
   }
 
   var submitButton = document.getElementById('form_submit_button');
+  var siteOriginField = form.querySelector('[name="site_origin"]');
   var requiredMessage = form.dataset.requiredMessage || 'Please fill in the required fields.';
   var privacyMessage = form.dataset.privacyMessage || 'Please agree to the Privacy Policy.';
   var endpointMissingMessage = form.dataset.endpointMissingMessage || 'Set your GAS web app URL before publishing.';
+  var submitErrorMessage = form.dataset.submitErrorMessage || 'Submission failed. Please try again later.';
   var thanksPath = form.dataset.thanksPath || '/en/thanks.html';
-  var siteOrigin = window.location.origin;
   var placeholderUrl = 'https://script.google.com/macros/s/REPLACE_WITH_GAS_WEB_APP_URL/exec';
   var isSubmitting = false;
+  var iframeName = 'mail_form_result';
+  var resultFrame = document.getElementById(iframeName);
+
+  if (!resultFrame) {
+    resultFrame = document.createElement('iframe');
+    resultFrame.id = iframeName;
+    resultFrame.name = iframeName;
+    resultFrame.title = 'mail form result';
+    resultFrame.style.display = 'none';
+    form.parentNode.appendChild(resultFrame);
+  }
+
+  form.setAttribute('target', iframeName);
 
   function resetSubmitButton() {
     isSubmitting = false;
@@ -22,6 +36,30 @@
       submitButton.value = 'Submit';
     }
   }
+
+  function isAllowedGasOrigin(origin) {
+    return /^https:\/\/script\.google(?:usercontent)?\.com$/i.test(origin);
+  }
+
+  window.addEventListener('message', function(event) {
+    if (!isAllowedGasOrigin(event.origin)) {
+      return;
+    }
+
+    var data = event.data || {};
+
+    if (data.type !== 'actis-form-result') {
+      return;
+    }
+
+    if (data.status === 'success') {
+      window.location.href = window.location.origin + thanksPath;
+      return;
+    }
+
+    resetSubmitButton();
+    window.alert(data.message || submitErrorMessage);
+  });
 
   form.addEventListener('submit', function(event) {
     event.preventDefault();
@@ -53,34 +91,18 @@
       return;
     }
 
+    if (siteOriginField) {
+      siteOriginField.value = window.location.origin;
+    }
+
+    form.setAttribute('target', iframeName);
+
     if (submitButton) {
       submitButton.disabled = true;
       submitButton.value = 'Submitting...';
     }
 
     isSubmitting = true;
-
-    var formData = new FormData(form);
-    var submitted = false;
-
-    if (navigator.sendBeacon) {
-      try {
-        submitted = navigator.sendBeacon(form.action, formData);
-      } catch (error) {
-        submitted = false;
-      }
-    }
-
-    if (!submitted) {
-      fetch(form.action, {
-        method: 'POST',
-        mode: 'no-cors',
-        body: formData,
-        keepalive: true
-      }).catch(function() {});
-    }
-
-    window.location.href = siteOrigin + thanksPath;
-    setTimeout(resetSubmitButton, 2000);
+    form.submit();
   });
 })();
