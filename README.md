@@ -397,5 +397,4 @@ python3 -m http.server 4173 --directory public
 
 ## 注意点
 
-- `customer@pled.co.jp` が Google グループの場合、`abe@pled.co.jp` には届くが `customer@pled.co.jp` には届かないことがあります。その場合は Google グループ側の投稿権限とモデレーションキューを確認してください。
 - `public/jp/thanks.html` と `public/en/thanks.html` には、固定の `web.app` URL 付近にコメントがあります。本番カスタムドメインが決まったら差し替えてください。
