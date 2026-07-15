@@ -8,6 +8,15 @@
 <title>サンクスページ｜行政書士法人アクティス</title>
 <link rel="stylesheet" type="text/css" href="css/reset.css">
 <link rel="stylesheet" type="text/css" href="css/style.css">
+<script>
+// TODO: Replace with the production custom domain when it is ready.
+var ACTIS_SITE_ORIGIN = location.hostname === 'script.google.com'
+  ? 'https://actis-visa-support-lp.web.app'
+  : location.origin;
+if (location.hostname === 'script.google.com') {
+  location.replace(ACTIS_SITE_ORIGIN + '/jp/thanks.html');
+}
+</script>
 <style>
 .thanks {
     width: 1000px;
@@ -57,7 +66,7 @@
 行政書士法人アクティス<br>
 福岡市中央区大手門2丁目1番16号4F<br>
 TEL：092-753-9641</p>
-<p class="backBtn tCenter font18 m80"><a class="white" href="index.html">トップページへ戻る</a></p>
+<p class="backBtn tCenter font18 m80"><a class="white" href="https://actis-visa-support-lp.web.app/jp/">トップページへ戻る</a></p>
 <div class="footer">
 <p class="tCenter font15 m40 notoR"><a href="https://japan-immigration.jp/company" target="_blank">会社概要</a>｜<a href="https://japan-immigration.jp/privacy" target="_blank">プライバシーポリシー</a></p>
 <p class="copy tCenter font12 m30 notoR">&copy; 2026 行政書士法人アクティス All Rights Reserved.</p>

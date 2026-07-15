@@ -162,7 +162,9 @@
 <div class="qr"><a href="https://lin.ee/S7jABme" target="_blank"><img src="images/qr.png" alt=""/></a></div>
 <div id="contact" class="form">
 <p class="font22 tCenter bold m60">24/7 Online Inquiry Form</p>
-<form action="php/mailform.php" method="post" id="mail_form">
+<form action="https://script.google.com/macros/s/AKfycbwXuAi3T_G6_qcqd8LkSR9YUiQE6HtnmTEvXTSs6Mzp4z9qkgoDPkZAQbZNkEwxS-eTjw/exec" method="post" id="mail_form" target="mail_form_result" data-form-language="en" data-thanks-path="/en/thanks.html" data-required-message="Please fill in the required fields." data-privacy-message="Please agree to the Privacy Policy." data-endpoint-missing-message="Set your GAS web app URL before publishing." data-submit-error-message="Submission failed. Please try again later.">
+<input type="hidden" name="lang" value="en" />
+<input type="hidden" name="site_origin" value="" />
 <dl class="flex m25">
 <dt>Full Name</dt>
 <dt class="hissu">Required</dt>
@@ -194,7 +196,7 @@
 <label><input type="checkbox" name="privacy" value="I agree to the Privacy Policy" />&nbsp;I agree to the&nbsp;<a style="text-decoration: underline;" href="https://japan-immigration.jp/privacy" target="_blank">Privacy Policy</a></label>
 </dd>
 </dl>
-<p id="form_submit" class="tCenter"><input class="white" type="button" id="form_submit_button" value="Submit" /></p>
+<p id="form_submit" class="tCenter"><input class="white" type="submit" id="form_submit_button" value="Submit" /></p>
 </form>
 </div><!--/.form-->
 </div>
@@ -228,9 +230,7 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script> 
 <!-- jQuery本体の読み込みここまで --> 
 
-<!-- メールフォーム必須JSここから -->
-<script src="js/mailform-js.php" id="mailform-js"></script>
-<!-- メールフォーム必須JSここまで -->
+<script src="js/contact.js"></script>
 
 <!-- フリガナ自動入力ライブラリここから -->
 <script src="js/jquery.autoKana.js"></script>
