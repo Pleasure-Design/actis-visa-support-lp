@@ -23,6 +23,15 @@ if (location.hostname === 'script.google.com') {
   location.replace(ACTIS_SITE_ORIGIN + '/en/thanks.html');
 }
 </script>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-4FL4ZJQS1J"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-4FL4ZJQS1J');
+</script>
 <style>
 .thanks {
     width: 1000px;
